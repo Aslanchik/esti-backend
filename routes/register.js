@@ -11,9 +11,10 @@ router.post("/", async (req, res) => {
   const { error } = regVal(req.body);
   if (error) return res.status(400).send(error.details[0]);
 
-  //CHECK IF USER IS ALREADY IN DATABASE ----------- BETTER TO MAKE THE AUTHENTICATION IN THE FRONT END
-  const idExists = await Staff.findOne({ _id: req.body._id });
+  //CHECK IF USER IS ALREADY IN DATABASE
+  const idExists = await Staff.findOne({ govId: req.body.govId });
   const emailExists = await Staff.findOne({ email: req.body.email });
+
   if (idExists) return res.status(400).send("This ID is already registered");
   if (emailExists)
     return res.status(400).send("This EMAIL is already registered");
@@ -24,8 +25,9 @@ router.post("/", async (req, res) => {
 
   //CREATE NEW Staff
   const staff = new Staff({
-    _id: req.body._id,
-    full_name: req.body.full_name,
+    govId: req.body.govId,
+    fname: req.body.fname,
+    lname: req.body.lname,
     email: req.body.email,
     password: hashPass,
   });
@@ -33,7 +35,7 @@ router.post("/", async (req, res) => {
   //SAVE NEW STAFF INTO DATABASE
   try {
     const savedStaff = await staff.save();
-    res.json({ staff: staff.full_name });
+    res.json({ message: "success" });
   } catch (err) {
     res.json({ message: err });
   }

@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 
 const StaffSchema = mongoose.Schema(
   {
-    _id: { type: Number, required: true, min: 100000000, max: 999999999 },
-    full_name: { type: String, required: true, max: 255 },
+    govId: { type: Number, required: true, min: 100000000, max: 999999999 },
+    fname: { type: String, required: true, max: 255 },
+    lname: { type: String, required: true, max: 255 },
     email: { type: String, required: true },
     password: { type: String, required: true, max: 1024, min: 6 },
   },

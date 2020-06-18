@@ -8,21 +8,29 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv").config();
 
 router.post("/", async (req, res) => {
-  //VALIDATE THE DATA BEFORE WE MAKE NEW Staff
+  //Validate staff login
   const { error } = logVal(req.body);
-  if (error) return res.status(400).send(error.details[0]);
+  if (error) return res.status(401).json(error.details[0]);
+
   //CHECK IF ID EXISTS IN DB
-  const person = await Staff.findOne({ _id: req.body._id });
+  const person = await Staff.findOne({ govId: req.body.govId });
   if (!person)
-    return res.status(400).send("ID is not registered in our system!");
+    return res.status(401).json({ message: "ID is not recognized." });
 
   //CHECK IF PASS CORRECT
   const validPass = await bcrypt.compare(req.body.password, person.password);
-  if (!validPass) return res.status(400).send("Invalid Password");
+  if (!validPass)
+    return res.status(401).json({ message: "Password is incorrect." });
 
   //CREATE AND ASSIGN JSON WEB TOKEN
-  const token = jwt.sign({ _id: person.password }, process.env.TOKEN_SECRET);
-  res.header("auth-token", token).send(token);
+  const token = jwt.sign(
+    { govId: person.govId, userId: person._id },
+    process.env.TOKEN_SECRET,
+    { expiresIn: "1h" }
+  );
+  res.status(200).json({
+    token: token,
+  });
 });
 
 module.exports = router;

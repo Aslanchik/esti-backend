@@ -4,13 +4,18 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const mongoose = require("mongoose");
+const cors = require("cors");
+require("dotenv/config");
 
 const indexR = require("./routes/index");
 const registerR = require("./routes/register");
 const loginR = require("./routes/login");
 const mainR = require("./routes/main");
+const addPatientR = require("./routes/newPatient");
 
 const app = express();
+
+app.use(cors());
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -22,6 +27,7 @@ app.use("/", indexR);
 app.use("/register", registerR);
 app.use("/login", loginR);
 app.use("/main", mainR);
+app.use("/new-patient", addPatientR);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -36,11 +42,14 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render("error");
+  res.send("error");
 });
 //CONNECT TO MONGODB
 mongoose
-  .connect("mongodb://localhost/esti", { useNewUrlParser: true })
+  .connect(process.env.DB_CONNECTION, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("Connecting to mongodb!"))
   .catch((err) => console.error("Could not Connect to mongodb", err));
 
