@@ -2,23 +2,18 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Patient = require("../models/Patients");
-const { regVal, addPatientVal } = require("../validation");
-const bcrypt = require("bcryptjs");
 
 // ADD A NEW PATIENT TO DATABASE
 router.post("/", async (req, res) => {
-  //VALIDATE THE DATA BEFORE WE MAKE NEW Patient
-  /*  const { error } = addPatientVal(req.body);
-  if (error) return res.status(400).send(error.details[0]); */
-
-  //CHECK IF USER IS ALREADY IN DATABASE
-
+  //CHECK IF PATIENT IS ALREADY IN DATABASE
   const patientDocument = await Patient.findOne({ govId: req.body.govId });
 
+  // IF PATIENT IS ALREADY IN THE DATABASE JUST ADD THE CURRENT VISIT
   if (patientDocument) {
     patientDocument.visit.push({
       how: req.body.visit.how,
-      when: req.body.visit.when,
+      time: req.body.visit.time,
+      attendingNurse: req.body.visit.attendingNurse,
       medical: {
         state: req.body.visit.medical.state,
         allergies: req.body.visit.medical.allergies,
@@ -28,7 +23,6 @@ router.post("/", async (req, res) => {
           drugs: req.body.visit.medical.habits.drugs,
           drugsDescription: req.body.visit.medical.habits.drugsDescription,
         },
-        diet: req.body.visit.medical.diet,
         reasonOfVisit: req.body.visit.medical.reasonOfVisit,
         caseStory: req.body.visit.medical.caseStory,
         symptoms: req.body.visit.medical.symptoms,
@@ -62,7 +56,9 @@ router.post("/", async (req, res) => {
 
     try {
       const savedVisit = await patientDocument.save();
-      res.json({ patient: patient.govId });
+      res.json({
+        patient: `Patient ${patient.fname} ${patient.lname}'s Visit Added Successfully!`,
+      });
     } catch (err) {
       res.json({ message: err });
     }
@@ -73,12 +69,13 @@ router.post("/", async (req, res) => {
       fname: req.body.fname,
       lname: req.body.lname,
       email: req.body.email,
-      birthDate: req.body.birthDate,
+      birthYear: req.body.birthYear,
       phone: req.body.phone,
       address: req.body.address,
       visit: {
         how: req.body.visit.how,
         time: req.body.visit.time,
+        attendingNurse: req.body.visit.attendingNurse,
         medical: {
           state: req.body.visit.medical.state,
           allergies: req.body.visit.medical.allergies,
@@ -88,7 +85,6 @@ router.post("/", async (req, res) => {
             drugs: req.body.visit.medical.habits.drugs,
             drugsDescription: req.body.visit.medical.habits.drugsDescription,
           },
-          diet: req.body.visit.medical.diet,
           reasonOfVisit: req.body.visit.medical.reasonOfVisit,
           caseStory: req.body.visit.medical.caseStory,
           symptoms: req.body.visit.medical.symptoms,
@@ -124,7 +120,9 @@ router.post("/", async (req, res) => {
     //SAVE NEW Patient INTO DATABASE
     try {
       const savedPatient = await patient.save();
-      res.json({ patient: patient.govId });
+      res.json({
+        patient: `Patient ${patient.fname} ${patient.lname} Added Successfully!`,
+      });
     } catch (err) {
       res.json({ message: err });
     }

@@ -23,13 +23,12 @@ router.post("/", async (req, res) => {
     return res.status(401).json({ message: "Password is incorrect." });
 
   //CREATE AND ASSIGN JSON WEB TOKEN
-  const token = jwt.sign(
-    { govId: person.govId, userId: person._id },
-    process.env.TOKEN_SECRET,
-    { expiresIn: "1h" }
-  );
+  const token = jwt.sign({ govId: person.govId }, process.env.TOKEN_SECRET, {
+    expiresIn: "1h",
+  });
   res.status(200).json({
     token: token,
+    fullName: `${person.fname} ${person.lname}`,
   });
 });
 

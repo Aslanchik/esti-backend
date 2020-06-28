@@ -12,6 +12,7 @@ const registerR = require("./routes/register");
 const loginR = require("./routes/login");
 const mainR = require("./routes/main");
 const addPatientR = require("./routes/newPatient");
+const patientsR = require("./routes/patients");
 
 const app = express();
 
@@ -24,10 +25,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexR);
-app.use("/register", registerR);
-app.use("/login", loginR);
+app.use("/api/register", registerR);
+app.use("/api/login", loginR);
 app.use("/main", mainR);
-app.use("/new-patient", addPatientR);
+app.use("/api/new-patient", addPatientR);
+app.use("/api/patients", patientsR);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
