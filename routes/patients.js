@@ -8,15 +8,22 @@ router.get("/active", async (req, res) => {
   const activePatients = await Patient.find({
     "visit.medical.state": { $in: ["active", "critical"] },
   });
-  res.json(activePatients);
+  res.status(200).json(activePatients);
 });
 
-router.get("/discharged", async (req, res) => {
-  // Find all active/critical patients
-  const activePatients = await Patient.find({
-    "visit.medical.state": "discharged",
+router.get("/all", async (req, res) => {
+  // Find all patients
+  const allPatients = await Patient.find({});
+  res.status(200).json(allPatients);
+});
+
+router.get("/search", async (req, res) => {
+  let patientsArr = await Patient.find({});
+  let filteredArr = patientsArr.filter((item) => {
+    return item.name.indexOf(req.query.q) > -1;
   });
-  res.json(activePatients);
+  if (!filteredArr.length) filteredArr = { message: "No results, Try Again." };
+  res.json(filteredArr);
 });
 
 module.exports = router;
