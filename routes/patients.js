@@ -17,13 +17,16 @@ router.get("/all", async (req, res) => {
   res.status(200).json(allPatients);
 });
 
-router.get("/search", async (req, res) => {
-  let patientsArr = await Patient.find({});
-  let filteredArr = patientsArr.filter((item) => {
-    return item.name.indexOf(req.query.q) > -1;
+router.get("/search/:param", async (req, res) => {
+  const param = req.params.param;
+  let patientsArr = await Patient.find({
+    $or: [
+      { fname: { $regex: `.*${param}.*` } },
+      { lname: { $regex: `.*${param}.*` } },
+    ],
   });
-  if (!filteredArr.length) filteredArr = { message: "No results, Try Again." };
-  res.json(filteredArr);
+
+  res.status(200).json(patientsArr);
 });
 
 module.exports = router;
