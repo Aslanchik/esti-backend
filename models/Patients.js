@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
 const TasksVisitSchema = new mongoose.Schema({
-  procedures: { type: String, maxlength: 255 },
-  tests: { type: String, maxlength: 255 },
+  procedures: [{ type: String, maxlength: 255 }],
+  tests: [{ type: String, maxlength: 255 }],
 });
 
 const TreatmentPlanVisitSchema = new mongoose.Schema({
   diagnosis: { type: String, required: true, maxlength: 255 },
-  medication: { type: String, maxlength: 255 },
+  medication: [{ type: String, maxlength: 255 }],
   tasks: [TasksVisitSchema],
   notes: { type: String, maxlength: 500 },
 });
