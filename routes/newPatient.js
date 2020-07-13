@@ -5,51 +5,91 @@ const Patient = require("../models/Patients");
 
 // ADD A NEW PATIENT TO DATABASE
 router.post("/", async (req, res) => {
+  const {
+    govId,
+    fname,
+    lname,
+    email,
+    address,
+    birthYear,
+    phone,
+    visit: {
+      how,
+      time,
+      attendingNurse,
+      medical: {
+        state,
+        allergies,
+        habits: { smoking, drinking, drugs, drugsDescription },
+        reasonOfVisit,
+        caseStory,
+        symptoms,
+        hasHappenedBefore: { hasIt, description: hasHappenedDescription },
+        history: { isThere, description: historyDescription },
+        vitals: { pulse, bp, temp, weight, bloodSugar, respRate },
+        treatmentPlan: {
+          diagnosis,
+          medication,
+          tasks: {
+            procedures: [...procedure],
+            tests: [...test],
+          },
+
+          notes,
+        },
+      },
+    },
+  } = req.body;
+
   //CHECK IF PATIENT IS ALREADY IN DATABASE
-  const patientDocument = await Patient.findOne({ govId: req.body.govId });
+  const patientDocument = await Patient.findOne({ govId: govId });
 
   // IF PATIENT IS ALREADY IN THE DATABASE JUST ADD THE CURRENT VISIT
   if (patientDocument) {
     patientDocument.visit.push({
-      how: req.body.visit.how,
-      time: req.body.visit.time,
-      attendingNurse: req.body.visit.attendingNurse,
+      how: how,
+      time: time,
+      attendingNurse: attendingNurse,
       medical: {
-        state: req.body.visit.medical.state,
-        allergies: req.body.visit.medical.allergies,
+        state: state,
+        allergies: allergies,
         habits: {
-          smoking: req.body.visit.medical.habits.smoking,
-          drinking: req.body.visit.medical.habits.drinking,
-          drugs: req.body.visit.medical.habits.drugs,
-          drugsDescription: req.body.visit.medical.habits.drugsDescription,
+          smoking: smoking,
+          drinking: drinking,
+          drugs: drugs,
+          drugsDescription: drugsDescription,
         },
-        reasonOfVisit: req.body.visit.medical.reasonOfVisit,
-        caseStory: req.body.visit.medical.caseStory,
-        symptoms: req.body.visit.medical.symptoms,
+        reasonOfVisit: reasonOfVisit,
+        caseStory: caseStory,
+        symptoms: symptoms,
         hasHappenedBefore: {
-          hasIt: req.body.visit.medical.hasHappenedBefore.hasIt,
-          description: req.body.visit.medical.hasHappenedBefore.description,
+          hasIt: hasIt,
+          description: hasHappenedDescription,
         },
+
         history: {
-          isThere: req.body.visit.medical.history.isThere,
-          description: req.body.visit.medical.history.description,
+          isThere: isThere,
+          description: historyDescription,
         },
+
         vitals: {
-          pulse: req.body.visit.medical.vitals.pulse,
-          bp: req.body.visit.medical.vitals.bp,
-          temp: req.body.visit.medical.vitals.temp,
-          weight: req.body.visit.medical.vitals.weight,
-          bloodSugar: req.body.visit.medical.vitals.bloodSugar,
-          respRate: req.body.visit.medical.vitals.respRate,
+          pulse: pulse,
+          bp: bp,
+          temp: temp,
+          weight: weight,
+          bloodSugar: bloodSugar,
+          respRate: respRate,
         },
+
         treatmentPlan: {
-          diagnosis: req.body.visit.medical.treatmentPlan.diagnosis,
-          medication: req.body.visit.medical.treatmentPlan.medication,
+          diagnosis: diagnosis,
+          medication: medication,
           tasks: {
-            procedures: req.body.visit.medical.treatmentPlan.tasks.procedures,
-            tests: req.body.visit.medical.treatmentPlan.tasks.tests,
+            procedures: procedure,
+            tests: test,
           },
-          notes: req.body.visit.medical.treatmentPlan.notes,
+
+          notes: notes,
         },
       },
     });
@@ -65,53 +105,57 @@ router.post("/", async (req, res) => {
   } else {
     //CREATE NEW Patient
     const patient = new Patient({
-      govId: req.body.govId,
-      fname: req.body.fname,
-      lname: req.body.lname,
-      email: req.body.email,
-      birthYear: req.body.birthYear,
-      phone: req.body.phone,
-      address: req.body.address,
+      govId: govId,
+      fname: fname,
+      lname: lname,
+      email: email,
+      birthYear: birthYear,
+      phone: phone,
+      address: address,
       visit: {
-        how: req.body.visit.how,
-        time: req.body.visit.time,
-        attendingNurse: req.body.visit.attendingNurse,
+        how: how,
+        time: time,
+        attendingNurse: attendingNurse,
         medical: {
-          state: req.body.visit.medical.state,
-          allergies: req.body.visit.medical.allergies,
+          state: state,
+          allergies: allergies,
           habits: {
-            smoking: req.body.visit.medical.habits.smoking,
-            drinking: req.body.visit.medical.habits.drinking,
-            drugs: req.body.visit.medical.habits.drugs,
-            drugsDescription: req.body.visit.medical.habits.drugsDescription,
+            smoking: smoking,
+            drinking: drinking,
+            drugs: drugs,
+            drugsDescription: drugsDescription,
           },
-          reasonOfVisit: req.body.visit.medical.reasonOfVisit,
-          caseStory: req.body.visit.medical.caseStory,
-          symptoms: req.body.visit.medical.symptoms,
+          reasonOfVisit: reasonOfVisit,
+          caseStory: caseStory,
+          symptoms: symptoms,
           hasHappenedBefore: {
-            hasIt: req.body.visit.medical.hasHappenedBefore.hasIt,
-            description: req.body.visit.medical.hasHappenedBefore.description,
+            hasIt: hasIt,
+            description: hasHappenedDescription,
           },
+
           history: {
-            isThere: req.body.visit.medical.history.isThere,
-            description: req.body.visit.medical.history.description,
+            isThere: isThere,
+            description: historyDescription,
           },
+
           vitals: {
-            pulse: req.body.visit.medical.vitals.pulse,
-            bp: req.body.visit.medical.vitals.bp,
-            temp: req.body.visit.medical.vitals.temp,
-            weight: req.body.visit.medical.vitals.weight,
-            bloodSugar: req.body.visit.medical.vitals.bloodSugar,
-            respRate: req.body.visit.medical.vitals.respRate,
+            pulse: pulse,
+            bp: bp,
+            temp: temp,
+            weight: weight,
+            bloodSugar: bloodSugar,
+            respRate: respRate,
           },
+
           treatmentPlan: {
-            diagnosis: req.body.visit.medical.treatmentPlan.diagnosis,
-            medication: req.body.visit.medical.treatmentPlan.medication,
+            diagnosis: diagnosis,
+            medication: medication,
             tasks: {
-              procedures: req.body.visit.medical.treatmentPlan.tasks.procedures,
-              tests: req.body.visit.medical.treatmentPlan.tasks.tests,
+              procedures: procedure,
+              tests: test,
             },
-            notes: req.body.visit.medical.treatmentPlan.notes,
+
+            notes: notes,
           },
         },
       },
@@ -121,7 +165,7 @@ router.post("/", async (req, res) => {
     try {
       const savedPatient = await patient.save();
       res.json({
-        patient: `Patient ${patient.fname} ${patient.lname} Added Successfully!`,
+        savedPatient,
       });
     } catch (err) {
       res.json({ message: err });

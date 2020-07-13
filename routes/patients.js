@@ -1,14 +1,25 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+
 const Patient = require("../models/Patients");
 
 router.get("/active", async (req, res) => {
   // Find all active/critical patients
-  const activePatients = await Patient.find({
+
+  const unfilteredActivePatients = await Patient.find({
     "visit.medical.state": { $in: ["active", "critical"] },
   });
-  res.status(200).json(activePatients);
+  /* const activePatients = unfilteredActivePatients.map((patient) => {
+    return {
+      ...patient,
+      visit: patient.visit.filter(
+        (visit) => visit.medical[0].state !== "discharged"
+      ),
+    };
+  });
+  console.log(activePatients); */
+  res.status(200).json(unfilteredActivePatients);
 });
 
 router.get("/all", async (req, res) => {
@@ -25,8 +36,65 @@ router.get("/search/:param", async (req, res) => {
       { lname: { $regex: `.*${param}.*` } },
     ],
   });
-
   res.status(200).json(patientsArr);
+});
+
+router.patch("/updateState", async (req, res) => {
+  const { govId, _id: visitId, state } = req.body;
+  try {
+    const patientDocument = await Patient.findOneAndUpdate(
+      { govId: govId, "visit._id": visitId },
+      { $set: { state: state } }
+    );
+  } catch (err) {
+    res.status(400).json({ message: err });
+  }
+});
+
+router.patch("/updateCompletedTask", async (req, res) => {
+  const {
+    govId,
+    task: { title, isComplete, type },
+  } = req.body;
+
+  const patientDocument = await Patient.findOne({
+    govId: govId,
+  });
+
+  let visitToUpdate = "";
+
+  for (let visit of patientDocument.visit) {
+    const { procedures, tests } = visit.medical[0].treatmentPlan[0].tasks[0];
+    if (type === "test") {
+      tests.map((test) => {
+        if (test.title === title) {
+          test.isComplete = isComplete;
+          return test;
+        }
+      });
+    }
+    if (type === "procedure") {
+      procedures.map((procedure) => {
+        if (procedure.title === title) {
+          procedure.isComplete = isComplete;
+          return procedure;
+        }
+      });
+    }
+    visitToUpdate = visit;
+  }
+  try {
+    const updatedPatientDocument = await Patient.findOneAndUpdate(
+      {
+        govId: govId,
+        "visit._id": visitToUpdate._id,
+      },
+      { $set: { visit: visitToUpdate } }
+    );
+    res.status(200).json(updatedPatientDocument);
+  } catch (err) {
+    res.status(400).json({ message: err });
+  }
 });
 
 module.exports = router;

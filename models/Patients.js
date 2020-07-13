@@ -1,8 +1,17 @@
 const mongoose = require("mongoose");
 
+const ProcedureSchema = new mongoose.Schema({
+  title: { type: String, maxlength: 255 },
+  isComplete: { type: Boolean },
+});
+const TestSchema = new mongoose.Schema({
+  title: { type: String, maxlength: 255 },
+  isComplete: { type: Boolean },
+});
+
 const TasksVisitSchema = new mongoose.Schema({
-  procedures: [{ type: String, maxlength: 255 }],
-  tests: [{ type: String, maxlength: 255 }],
+  procedures: [ProcedureSchema],
+  tests: [TestSchema],
 });
 
 const TreatmentPlanVisitSchema = new mongoose.Schema({
@@ -62,16 +71,24 @@ const VisitSchema = new mongoose.Schema(
 );
 
 const PatientSchema = mongoose.Schema({
-  govId: { type: String, required: true, minlength: 9, maxlength: 9 },
+  govId: {
+    type: String,
+    required: true,
+    unique: true,
+    minlength: 9,
+    maxlength: 9,
+  },
   fname: { type: String, required: true, maxlength: 255 },
   lname: { type: String, required: true, maxlength: 255 },
   birthYear: { type: Number, required: true, maxlength: 4 },
   phone: { type: String, required: true, minlength: 9, maxlength: 10 },
-  email: { type: String, required: true, maxlength: 100 },
+  email: { type: String, required: true, unique: true, maxlength: 100 },
   address: { type: String, required: true, maxlength: 255 },
   visit: [VisitSchema],
 });
 
+const Tests = mongoose.model("Tests", TestSchema);
+const Procedures = mongoose.model("Procedures", ProcedureSchema);
 const Tasks = mongoose.model("Tasks", TasksVisitSchema);
 const Vitals = mongoose.model("Vitals", VitalsVisitSchema);
 const History = mongoose.model("History", HistoryVisitSchema);
