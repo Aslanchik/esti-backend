@@ -10,15 +10,7 @@ router.get("/active", async (req, res) => {
   const unfilteredActivePatients = await Patient.find({
     "visit.medical.state": { $in: ["active", "critical"] },
   });
-  /* const activePatients = unfilteredActivePatients.map((patient) => {
-    return {
-      ...patient,
-      visit: patient.visit.filter(
-        (visit) => visit.medical[0].state !== "discharged"
-      ),
-    };
-  });
-  console.log(activePatients); */
+
   res.status(200).json(unfilteredActivePatients);
 });
 
@@ -40,12 +32,20 @@ router.get("/search/:param", async (req, res) => {
 });
 
 router.patch("/updateState", async (req, res) => {
-  const { govId, _id: visitId, state } = req.body;
+  const { govId, visitId, newState } = req.body;
+
+  const patientDocument = await Patient.findOne({
+    govId: govId,
+  });
+
+  for (let visit of patientDocument.visit) {
+    if (visit._id == visitId) {
+      visit.medical[0].state = newState;
+    }
+  }
   try {
-    const patientDocument = await Patient.findOneAndUpdate(
-      { govId: govId, "visit._id": visitId },
-      { $set: { state: state } }
-    );
+    const savedPatient = await patientDocument.save();
+    res.status(200).json({ message: "Success!" });
   } catch (err) {
     res.status(400).json({ message: err });
   }
