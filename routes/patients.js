@@ -5,18 +5,17 @@ const mongoose = require("mongoose");
 const verify = require("../middleware/auth-check");
 const Patient = require("../models/Patients");
 
+// Find all active/critical patients
 router.get("/active", verify, async (req, res) => {
-  // Find all active/critical patients
-
-  const unfilteredActivePatients = await Patient.find({
+  const activePatients = await Patient.find({
     "visit.medical.state": { $in: ["active", "critical"] },
   });
 
-  res.status(200).json(unfilteredActivePatients);
+  res.status(200).json(activePatients);
 });
 
+// Find all patients
 router.get("/all", verify, async (req, res) => {
-  // Find all patients
   const allPatients = await Patient.find({});
   res.status(200).json(allPatients);
 });
