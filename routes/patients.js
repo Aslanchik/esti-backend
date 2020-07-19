@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 
+const verify = require("../middleware/auth-check");
 const Patient = require("../models/Patients");
 
-router.get("/active", async (req, res) => {
+router.get("/active", verify, async (req, res) => {
   // Find all active/critical patients
 
   const unfilteredActivePatients = await Patient.find({
@@ -14,13 +15,13 @@ router.get("/active", async (req, res) => {
   res.status(200).json(unfilteredActivePatients);
 });
 
-router.get("/all", async (req, res) => {
+router.get("/all", verify, async (req, res) => {
   // Find all patients
   const allPatients = await Patient.find({});
   res.status(200).json(allPatients);
 });
 
-router.get("/search/:param", async (req, res) => {
+router.get("/search/:param", verify, async (req, res) => {
   const param = req.params.param;
   let patientsArr = await Patient.find({
     $or: [
@@ -31,7 +32,7 @@ router.get("/search/:param", async (req, res) => {
   res.status(200).json(patientsArr);
 });
 
-router.patch("/updateState", async (req, res) => {
+router.patch("/updateState", verify, async (req, res) => {
   const { govId, visitId, newState } = req.body;
 
   const patientDocument = await Patient.findOne({
@@ -51,7 +52,7 @@ router.patch("/updateState", async (req, res) => {
   }
 });
 
-router.patch("/updateCompletedTask", async (req, res) => {
+router.patch("/updateCompletedTask", verify, async (req, res) => {
   const {
     govId,
     task: { title, isComplete, type },

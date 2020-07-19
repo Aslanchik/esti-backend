@@ -7,10 +7,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv/config");
 
-const indexR = require("./routes/index");
 const registerR = require("./routes/register");
 const loginR = require("./routes/login");
-const mainR = require("./routes/main");
 const addPatientR = require("./routes/newPatient");
 const patientsR = require("./routes/patients");
 
@@ -24,10 +22,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", indexR);
 app.use("/api/register", registerR);
 app.use("/api/login", loginR);
-app.use("/main", mainR);
 app.use("/api/new-patient", addPatientR);
 app.use("/api/patients", patientsR);
 
