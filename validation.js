@@ -1,5 +1,5 @@
 //VALIDATION
-const Joi = require("@hapi/joi");
+const Joi = require("joi");
 
 //REGISTER VALIDATION
 const regVal = (data) => {

@@ -7,13 +7,14 @@ const bcrypt = require("bcryptjs");
 
 // ADD A NEW Staff TO DATABASE
 router.post("/", async (req, res) => {
+  const { govId, fname, lname, email, password } = req.body;
   //VALIDATE THE DATA BEFORE WE MAKE NEW Staff
   const { error } = regVal(req.body);
   if (error) return res.status(400).send(error.details[0]);
 
   //CHECK IF USER IS ALREADY IN DATABASE
-  const idExists = await Staff.findOne({ govId: req.body.govId });
-  const emailExists = await Staff.findOne({ email: req.body.email });
+  const idExists = await Staff.findOne({ govId: govId });
+  const emailExists = await Staff.findOne({ email: email });
 
   if (idExists) return res.status(400).send("This ID is already registered");
   if (emailExists)
@@ -21,14 +22,14 @@ router.post("/", async (req, res) => {
 
   //HASH THE PASSWORD
   const salt = await bcrypt.genSalt(10);
-  const hashPass = await bcrypt.hash(req.body.password, salt);
+  const hashPass = await bcrypt.hash(password, salt);
 
   //CREATE NEW Staff
   const staff = new Staff({
-    govId: req.body.govId,
-    fname: req.body.fname,
-    lname: req.body.lname,
-    email: req.body.email,
+    govId: govId,
+    fname: fname,
+    lname: lname,
+    email: email,
     password: hashPass,
   });
 

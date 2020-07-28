@@ -31,18 +31,20 @@ router.get("/search/:param", verify, async (req, res) => {
   res.status(200).json(patientsArr);
 });
 
+//UPDATE STATE OF A PATIENT IN A VISIT
 router.patch("/updateState", verify, async (req, res) => {
   const { govId, visitId, newState } = req.body;
 
   const patientDocument = await Patient.findOne({
     govId: govId,
   });
-
+  // LOOP THROUGH VISITS AND UPDATE THE STATE IN THE CORRECT VISIT
   for (let visit of patientDocument.visit) {
     if (visit._id == visitId) {
       visit.medical[0].state = newState;
     }
   }
+  // SAVE PATIENT
   try {
     const savedPatient = await patientDocument.save();
     res.status(200).json({ message: "Success!" });
@@ -51,6 +53,7 @@ router.patch("/updateState", verify, async (req, res) => {
   }
 });
 
+// COMPLETE A TASK
 router.patch("/updateCompletedTask", verify, async (req, res) => {
   const {
     govId,
@@ -62,7 +65,7 @@ router.patch("/updateCompletedTask", verify, async (req, res) => {
   });
 
   let visitToUpdate = "";
-
+  // LOOP THROUGH TASKS AND SET THE COMPLETED ONE TO COMPLETE
   for (let visit of patientDocument.visit) {
     const { procedures, tests } = visit.medical[0].treatmentPlan[0].tasks[0];
     if (type === "test") {
@@ -83,6 +86,7 @@ router.patch("/updateCompletedTask", verify, async (req, res) => {
     }
     visitToUpdate = visit;
   }
+  // UPDATE THE VISIT IN WHICH THE TASK WAS COMPLETED
   try {
     const updatedPatientDocument = await Patient.findOneAndUpdate(
       {
@@ -92,6 +96,40 @@ router.patch("/updateCompletedTask", verify, async (req, res) => {
       { $set: { visit: visitToUpdate } }
     );
     res.status(200).json(updatedPatientDocument);
+  } catch (err) {
+    res.status(400).json({ message: err });
+  }
+});
+
+// DELETE PATIENT FROM DB
+router.delete("/delete", async (req, res) => {
+  const { govId, visitId } = req.body;
+
+  const patientDocument = await Patient.findOne({
+    govId: govId,
+  });
+  // IF PATIENT HAS MULTIPLE VISITS, DELETE ONLY THE SELECTED ONE
+  if (patientDocument.visit[1]) {
+    const filteredVisits = patientDocument.visit.filter(
+      (visit) => visit._id.toString() !== visitId
+    );
+    try {
+      const updatedPatientDocument = await Patient.findOneAndUpdate(
+        {
+          govId: govId,
+        },
+        { $set: { visit: filteredVisits } }
+      );
+      res.status(200).json(updatedPatientDocument);
+    } catch (err) {
+      res.status(400).json({ message: err });
+    }
+    return;
+  }
+  //IF PATIENT HAS NO VISITS - DELETE THE PATIENT COMPLETELY
+  try {
+    const deletedPatient = await Patient.deleteOne({ govId: govId });
+    res.status(200).json({ deleted: deletedPatient });
   } catch (err) {
     res.status(400).json({ message: err });
   }
