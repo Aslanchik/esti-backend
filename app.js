@@ -44,7 +44,7 @@ app.use(function (err, req, res, next) {
 });
 //CONNECT TO MONGODB
 mongoose
-  .connect(process.env.DB_CONNECTION, {
+  .connect(process.env.DB_CONNECTION || "mongodb://localhost/esti", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,

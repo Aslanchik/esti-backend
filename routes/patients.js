@@ -20,6 +20,7 @@ router.get("/all", verify, async (req, res) => {
   res.status(200).json(allPatients);
 });
 
+// Find a specific patient
 router.get("/search/:param", verify, async (req, res) => {
   const param = req.params.param;
   let patientsArr = await Patient.find({
@@ -102,8 +103,9 @@ router.patch("/updateCompletedTask", verify, async (req, res) => {
 });
 
 // DELETE PATIENT FROM DB
-router.delete("/delete", async (req, res) => {
+router.post("/delete", async (req, res) => {
   const { govId, visitId } = req.body;
+  console.log(req.body);
 
   const patientDocument = await Patient.findOne({
     govId: govId,
