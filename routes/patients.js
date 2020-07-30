@@ -102,10 +102,30 @@ router.patch("/updateCompletedTask", verify, async (req, res) => {
   }
 });
 
+// EDIT VISIT
+router.patch("/editVisit", verify, async (req, res) => {
+  const { govId, visitId, medical } = req.body;
+
+  const patientDocument = await Patient.findOne({ govId: govId });
+  // LOOP THROUGH VISITS AND WHEN A VISIT MATCHES THE THE VISITID UPDATE IT WITH MEDICAL DATA
+  for (let visit of patientDocument.visit) {
+    if (visit._id.toString() === visitId) {
+      visit.medical = medical;
+      break;
+    }
+  }
+  // SAVE EDITED PATIENT
+  try {
+    const editedPatient = await patientDocument.save();
+    res.status(200).json({ message: "success" });
+  } catch (err) {
+    res.status(400).json({ message: err });
+  }
+});
+
 // DELETE PATIENT FROM DB
 router.post("/delete", async (req, res) => {
   const { govId, visitId } = req.body;
-  console.log(req.body);
 
   const patientDocument = await Patient.findOne({
     govId: govId,
