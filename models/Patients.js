@@ -87,14 +87,5 @@ const PatientSchema = mongoose.Schema({
   visit: [VisitSchema],
 });
 
-const Tests = mongoose.model("Tests", TestSchema);
-const Procedures = mongoose.model("Procedures", ProcedureSchema);
-const Tasks = mongoose.model("Tasks", TasksVisitSchema);
-const Vitals = mongoose.model("Vitals", VitalsVisitSchema);
-const History = mongoose.model("History", HistoryVisitSchema);
-const Before = mongoose.model("Before", BeforeVisitSchema);
-const Habits = mongoose.model("Habits", HabitsVisitSchema);
-const TreatmentPlan = mongoose.model("TreatmentPlan", TreatmentPlanVisitSchema);
-const Medical = mongoose.model("Medical", MedicalVisitSchema);
 module.exports = mongoose.model("Visit", VisitSchema);
 module.exports = mongoose.model("Patient", PatientSchema);
