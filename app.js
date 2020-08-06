@@ -4,7 +4,6 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const mongoose = require("mongoose");
-const cors = require("cors");
 require("dotenv/config");
 
 const registerR = require("./routes/register");
@@ -13,8 +12,6 @@ const addPatientR = require("./routes/newPatient");
 const patientsR = require("./routes/patients");
 
 const app = express();
-
-app.use(cors());
 
 app.use(logger("dev"));
 app.use(express.json());
