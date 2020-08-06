@@ -5,7 +5,7 @@ const Staff = require("../models/Staff");
 const { logVal } = require("../validation");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv").config();
+/* const dotenv = require("dotenv").config(); */
 
 router.post("/", async (req, res) => {
   const { password, govId } = req.body;
