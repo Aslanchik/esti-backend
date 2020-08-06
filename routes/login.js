@@ -27,7 +27,6 @@ router.post("/", async (req, res) => {
   const token = jwt.sign({ govId: person.govId }, process.env.TOKEN_SECRET, {
     expiresIn: "1h",
   });
-  console.log(person);
   res.status(200).json({
     token: token,
     expiresIn: 3600,

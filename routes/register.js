@@ -16,9 +16,8 @@ router.post("/", async (req, res) => {
   const idExists = await Staff.findOne({ govId: govId });
   const emailExists = await Staff.findOne({ email: email });
 
-  if (idExists) return res.status(400).send("This ID is already registered");
-  if (emailExists)
-    return res.status(400).send("This EMAIL is already registered");
+  if (idExists) return res.status(400).send("id");
+  if (emailExists) return res.status(400).send("email");
 
   //HASH THE PASSWORD
   const salt = await bcrypt.genSalt(10);
