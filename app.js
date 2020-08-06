@@ -4,7 +4,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const mongoose = require("mongoose");
-require("dotenv").config();
+/* require("dotenv").config(); */
 
 const registerR = require("./routes/register");
 const loginR = require("./routes/login");
