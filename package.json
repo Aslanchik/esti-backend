@@ -1,9 +1,13 @@
 {
   "name": "esti",
-  "version": "0.0.0",
-  "private": true,
+  "version": "1.0.0",
+  "main": "app.js",
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "start": "node ./bin/www"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": "^12.18.3"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
